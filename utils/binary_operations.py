@@ -1,28 +1,39 @@
 
-def lshift(data:bytes,shift:int):
-    """<<"""
+def shift(data:str,shift:int):
+    """
+    Побитовый сдвиг
+    если shift > 0: вправо
+    если shift < 0: влево
+    """
     
-    data = data[shift:]
-    for i in range(shift):
-        data += b'\x00'
-    return data
-            
-def rshift(data:bytes,shift:int):
-    """>>"""
-    
-    add = bytes()
-    data = data[:shift]
-    for i in range(shift):
-        add += b'\x00'
-    return add+data            
+    return data[-shift:] + data[:-shift]        
 
-def xor(a,b):
+def AND(a:str, b:str)->str:
+    result = ''
+    for el in range(len(a)):
+        if a[el] == b[el]:
+            result += '1'
+        else: 
+            result += '0'
+    return result
+
+
+def XOR(a:str,b:str)-> str:
     """a XOR b"""
     
-    result = bytes()
+    result = ''
     for el in range(len(a)):
         if a[el]==b[el]:
-            result += b'\x00'
+            result += '0'
         else:
-            result += b'\x01'
+            result += '1'
+    return result
+
+def NOT(a:str)->str:
+    result = ''
+    for el in a:
+        if el =='0':
+            result += '1'
+        else:
+            result += '0'
     return result
