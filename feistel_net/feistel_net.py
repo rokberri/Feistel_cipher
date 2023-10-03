@@ -5,14 +5,24 @@ from math import ceil
 class Feistel_Net:
     
     def encode(self,path, secret_key, block_size, amount_of_rounds,f1,f2, mode='default'):
+        """
+        Кодирование файла path с использованием secret_key. Размер блока кодировки block_size.
+        Количество раундов шифрования amount_of_rounds, функции для кодировки f1 и f2. 
+        По умолчанию режим шифрования mode стандартный, можно использовать OFB
         
+        """
         if mode == 'default':
             return self.encode_default(path, secret_key, block_size, amount_of_rounds,f1,f2)
         elif mode == 'OFB':
             return self.encode_OFB(path, secret_key, block_size, amount_of_rounds,f1,f2)
 
     def decode(self,path, secret_key, block_size, amount_of_rounds,f1,f2, mode='default'):
+        """
+        Декодирование файла path с использованием secret_key. Размер блока кодировки block_size.
+        Количество раундов шифрования amount_of_rounds, функции для кодировки f1 и f2. 
+        По умолчанию режим шифрования mode стандартный, можно использовать OFB
         
+        """
         if mode == 'default':
             return self.decode_default(path, secret_key, block_size, amount_of_rounds,f1,f2)
         elif mode == 'OFB':
@@ -22,19 +32,19 @@ class Feistel_Net:
         
     def encode_default(self,path, secret_key, block_size, amount_of_rounds,f1,f2):
         
+        # инициализация переменной для битового представления данных
         secret_text = ''
         #считываем всю информацию для кодирования
         data_to_encode = get_data_for_encode(path)
-        print(f'CLEAN DATA:\n{data_to_encode}')
         # делим ее на блоки
         blocks = self.split_data_into_blocks(data_to_encode,block_size)
-        # #генерируем раундовые ключи, переписать метод(генераторная функция?)
+        # #генерируем раундовые ключи
         round_keys = self.generate_round_keys(secret_key, amount_of_rounds)
-
         # # запускаем цикл для каждого блока 
         for block in blocks:
             # для каждого блока запускаем установленное кол-во раундов шифрования
             for round_num in range(amount_of_rounds):
+                # делим блок на подблоки по 16 бит
                 b0 = block[0:16]
                 b1 = block[16:32]
                 b2 = block[32:48]
@@ -46,24 +56,29 @@ class Feistel_Net:
                 b2 = XOR(b2,NOT(round_keys[round_num]))
                 b1 = XOR(b1,(f2(b2,b3)))
                 # ///
+                # переставляем блоки
                 block = b2 + b3 + b1 + b0  
+            # формируем шифротекст
             secret_text += block
+        # вывод результата
         print(f'SECRET_TEXT:\n{secret_text}')
                    
     def decode_default(self, path, secret_key, block_size, amount_of_rounds,f1,f2):
-        secret_text = ''
-        #считываем всю информацию для кодирования
+        
+        # инициализация переменной для битового представления данных
+        open_text = ''
+        # считываем всю информацию для кодирования
         data_to_encode = read_data_from_file(path)
-        print(f'SECRET_TEXT:\n{data_to_encode}')
         # делим ее на блоки
         blocks = self.split_data_into_blocks(data_to_encode,block_size)
-        # #генерируем раундовые ключи, переписать метод(генераторная функция?)
+        # генерируем раундовые ключи, переписать метод(генераторная функция?)
         round_keys = self.generate_round_keys(secret_key, amount_of_rounds)
         round_keys.reverse()
-        # # запускаем цикл для каждого блока 
+        # запускаем цикл для каждого блока 
         for block in blocks:
             # для каждого блока запускаем установленное кол-во раундов шифрования
             for round_num in range(amount_of_rounds):
+                # делим блок на подблоки по 16 бит
                 b2 = block[0:16]
                 b3 = block[16:32]
                 b1 = block[32:48]
@@ -75,16 +90,19 @@ class Feistel_Net:
                 b3 = XOR(b3, f1(b0,b1))
                 b0 = XOR(b0, round_keys[round_num])
                 # ///
+                # переставляем блоки
                 block = b0 + b1 + b2 + b3  
-            secret_text += block
-            # print(f'ClEAN BLOCK:{block}')
-
-        print(f'CLEAN DATA:\n{secret_text}')
+            # формируем открытый текст
+            open_text += block
+        # вывод результата
+        print(f'CLEAN DATA:\n{open_text}')
         
     def encode_OFB(self,path, secret_key, block_size, amount_of_rounds,f1,f2):
+        # вектор инициализации
         iv = '1111000110100110011101001011101101010100000110010110011110101100' 
+        # инициализация переменной для битового представления данных
         secret_text = ''
-        #считываем всю информацию для кодирования
+        # считываем всю информацию для кодирования
         data_to_encode = get_data_for_encode(path)
         print(f'CLEAN DATA:\n{data_to_encode}')
         # делим ее на блоки
@@ -107,12 +125,16 @@ class Feistel_Net:
                 b2 = XOR(b2,NOT(round_keys[round_num]))
                 b1 = XOR(b1,(f2(b2,b3)))
                 # ///
+                # переставляем блоки
                 iv = b2 + b3 + b1 + b0  
+            # формируем  шифротекст
             secret_text += XOR(block, iv)
+        # вывод результата
         print(f'SECRET_TEXT:\n{secret_text}')
     
     
     def decode_OFB(self, path, secret_key, block_size, amount_of_rounds,f1,f2):
+        r
         iv = '1111000110100110011101001011101101010100000110010110011110101100'
         secret_text = ''
         #считываем всю информацию для кодирования
