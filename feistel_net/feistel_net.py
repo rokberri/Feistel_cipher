@@ -11,10 +11,12 @@ class Feistel_Net:
         По умолчанию режим шифрования mode стандартный, можно использовать OFB
         
         """
+        data_to_encode = read_data_from_file(path)
+        data_to_encode = self.split_data_into_blocks(data_to_encode,block_size)
         if mode == 'default':
-            return self.encode_default(path, secret_key, block_size, amount_of_rounds,f1,f2)
+            return self.encode_default(data_to_encode, secret_key, block_size, amount_of_rounds,f1,f2)
         elif mode == 'OFB':
-            return self.encode_OFB(path, secret_key, block_size, amount_of_rounds,f1,f2)
+            return self.encode_OFB(data_to_encode, secret_key, block_size, amount_of_rounds,f1,f2)
 
     def decode(self,path, secret_key, block_size, amount_of_rounds,f1,f2, mode='default'):
         """
@@ -23,25 +25,23 @@ class Feistel_Net:
         По умолчанию режим шифрования mode стандартный, можно использовать OFB
         
         """
+        data_to_encode = read_data_from_file(path)
+        data_to_encode = self.split_data_into_blocks(data_to_encode,block_size)
         if mode == 'default':
-            return self.decode_default(path, secret_key, block_size, amount_of_rounds,f1,f2)
+            return self.decode_default(data_to_encode, secret_key, block_size, amount_of_rounds,f1,f2)
         elif mode == 'OFB':
-            return self.decode_OFB(path, secret_key, block_size, amount_of_rounds,f1,f2)
+            return self.decode_OFB(data_to_encode, secret_key, block_size, amount_of_rounds,f1,f2)
         
         
         
-    def encode_default(self,path, secret_key, block_size, amount_of_rounds,f1,f2):
+    def encode_default(self, data_to_encode, secret_key, block_size, amount_of_rounds,f1,f2):
         
         # инициализация переменной для битового представления данных
         secret_text = ''
-        #считываем всю информацию для кодирования
-        data_to_encode = get_data_for_encode(path)
-        # делим ее на блоки
-        blocks = self.split_data_into_blocks(data_to_encode,block_size)
         # #генерируем раундовые ключи
         round_keys = self.generate_round_keys(secret_key, amount_of_rounds)
         # # запускаем цикл для каждого блока 
-        for block in blocks:
+        for block in data_to_encode:
             # для каждого блока запускаем установленное кол-во раундов шифрования
             for round_num in range(amount_of_rounds):
                 # делим блок на подблоки по 16 бит
@@ -61,21 +61,17 @@ class Feistel_Net:
             # формируем шифротекст
             secret_text += block
         # вывод результата
-        print(f'SECRET_TEXT:\n{secret_text}')
-                   
-    def decode_default(self, path, secret_key, block_size, amount_of_rounds,f1,f2):
+        return secret_text
+                       
+    def decode_default(self, data_to_encode, secret_key, block_size, amount_of_rounds,f1,f2):
         
         # инициализация переменной для битового представления данных
         open_text = ''
-        # считываем всю информацию для кодирования
-        data_to_encode = read_data_from_file(path)
-        # делим ее на блоки
-        blocks = self.split_data_into_blocks(data_to_encode,block_size)
         # генерируем раундовые ключи, переписать метод(генераторная функция?)
         round_keys = self.generate_round_keys(secret_key, amount_of_rounds)
         round_keys.reverse()
         # запускаем цикл для каждого блока 
-        for block in blocks:
+        for block in data_to_encode:
             # для каждого блока запускаем установленное кол-во раундов шифрования
             for round_num in range(amount_of_rounds):
                 # делим блок на подблоки по 16 бит
@@ -95,23 +91,18 @@ class Feistel_Net:
             # формируем открытый текст
             open_text += block
         # вывод результата
-        print(f'CLEAN DATA:\n{open_text}')
+        return open_text
         
-    def encode_OFB(self,path, secret_key, block_size, amount_of_rounds,f1,f2):
+    def encode_OFB(self, data_to_encode, secret_key, block_size, amount_of_rounds,f1,f2):
         # вектор инициализации
         iv = '1111000110100110011101001011101101010100000110010110011110101100' 
         # инициализация переменной для битового представления данных
         secret_text = ''
-        # считываем всю информацию для кодирования
-        data_to_encode = get_data_for_encode(path)
-        print(f'CLEAN DATA:\n{data_to_encode}')
-        # делим ее на блоки
-        blocks = self.split_data_into_blocks(data_to_encode,block_size)
         # #генерируем раундовые ключи, переписать метод(генераторная функция?)
         round_keys = self.generate_round_keys(secret_key, amount_of_rounds)
 
         # # запускаем цикл для каждого блока 
-        for block in blocks:
+        for block in data_to_encode:
             # для каждого блока запускаем установленное кол-во раундов шифрования
             for round_num in range(amount_of_rounds):
                 b0 = iv[0:16]
@@ -133,19 +124,13 @@ class Feistel_Net:
         print(f'SECRET_TEXT:\n{secret_text}')
     
     
-    def decode_OFB(self, path, secret_key, block_size, amount_of_rounds,f1,f2):
-        r
+    def decode_OFB(self, data_to_encode, secret_key, block_size, amount_of_rounds,f1,f2):
         iv = '1111000110100110011101001011101101010100000110010110011110101100'
         secret_text = ''
-        #считываем всю информацию для кодирования
-        data_to_encode = read_data_from_file(path)
-        print(f'SECRET_TEXT:\n{data_to_encode}')
-        # делим ее на блоки
-        blocks = self.split_data_into_blocks(data_to_encode,block_size)
         # #генерируем раундовые ключи
         round_keys = self.generate_round_keys(secret_key, amount_of_rounds)
         # # запускаем цикл для каждого блока 
-        for block in blocks:
+        for block in data_to_encode:
             # для каждого блока запускаем установленное кол-во раундов шифрования
             for round_num in range(amount_of_rounds):
                 b0 = iv[0:16]

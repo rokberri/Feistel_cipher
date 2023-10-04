@@ -1,11 +1,6 @@
+from utils.convert import *
+from utils import io
 
-from utils.binary_operations import *
-
-
-def F1(a:str,b:str)->str:
-    return AND(shift(a,4),shift(b,2))
-def F1_r(a:str,b:str)->str:
-    return AND(shift(a,-4),shift(b,-2))
-print(XOR('10011','10101'))
-print(XOR('10101','00110'))
-print(f'')
+IV = '1111000110100110011101001011101101010100000110010110011110101100'
+print(bin(97))
+print(io.convert_from_binary(bin(97), 7))
