@@ -7,7 +7,8 @@ def hash(filepath:str,f1,f2)->str:
     IV = '1111000110100110011101001011101101010100000110010110011110101100'
     f = Feistel_Net()
     hash_code = ''
-    data_blocks = f.split_data_into_blocks(io.get_data_for_encode(filepath),64)
+    data_blocks = f.split_data_into_blocks(io.get_data_for_encode(filepath,False),64)
+    print(data_blocks)
     for block in data_blocks:
         if len(hash_code) == 0:
             hash_code = XOR(block,IV)

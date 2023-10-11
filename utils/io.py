@@ -10,6 +10,14 @@ def read_data_from_file(path:str)->str:
     return data
 
 
-def get_data_for_encode(path:str)->str:
+def get_data_for_encode(path:str, bin:bool)->str:
     data_to_encode = read_data_from_file(path)
-    return convert_to_binary(data_to_encode)
+    if bin:
+        return convert_to_binary(data_to_encode)
+    else: 
+        return data_to_encode
+
+
+def write_to_file(path:str,data:str)->None:
+    with open(path,'w',encoding='utf-8') as f:
+        f.write(data)
