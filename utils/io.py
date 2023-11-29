@@ -13,9 +13,9 @@ def read_data_from_file(path:str)->str:
 def get_data_for_encode(path:str, bin:bool)->str:
     data_to_encode = read_data_from_file(path)
     if bin:
-        return convert_to_binary(data_to_encode)
-    else: 
         return data_to_encode
+    else: 
+        return convert_to_binary(data_to_encode)
 
 
 def write_to_file(path:str,data:str)->None:

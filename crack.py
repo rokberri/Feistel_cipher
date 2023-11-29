@@ -1,10 +1,11 @@
+import io
 from random import choice
-from hash import hash
-from utils.io import write_to_file
+from hash import HashFunction
+from utils import io
+from utils.binary_operations import *
 from utils.convert import convert
 
-ALPH =list("""0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
-               АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя""")
+ALPH =list("""0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя""")
 
 def test_alph():
      for el in ALPH:
@@ -29,10 +30,43 @@ def birthday_paradox(hash_len:int,f1,f2):
 
     # print(hash_db)
 
-def generate_text(hash_len:int)->str:
+def generate_text(length:int)->str:
     text = ''
    
-    for i in range(hash_len):
+    for i in range(length):
         text += choice(ALPH)
 
     return text
+
+def F1(a:str,b:str)->str:
+    return AND(shift(a,4),shift(b,2))
+
+def F2(a:str,b:str)->str:
+    return XOR(shift(a,7),NOT(b))
+
+
+def find_similat_text(new_word):
+    filepath = 'OpenText.txt'
+    open_text = io.read_data_from_file(filepath)
+    list_of_word = open_text.split()
+    origin_hash = hash(filepath,F1,F2,use_fin_func=True)
+    for ind, word in enumerate(list_of_word):
+        modified_words = list_of_word.copy()
+        modified_words[ind] = new_word
+        modified_text = " ".join(modified_words)
+        # io.write_to_file("DataSet.txt",modified_text)
+        new_hash = hash(modified_text,F1,F2,use_fin_func=True)
+        if new_hash == origin_hash :
+            io.write_to_file('coll.txt', modified_text)
+            return modified_text
+        print(f"{new_word}----{new_hash}")
+    return "Fail"
+
+
+def find_diff(origin:str, new_txt:str)->int:
+    am = 0 
+    for el in range(len(origin)):
+        if not origin[el] == new_txt[el]:
+            am += 1
+
+    return am

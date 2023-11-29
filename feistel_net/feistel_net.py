@@ -26,7 +26,7 @@ class Feistel_Net:
         
         """
         data_to_encode = read_data_from_file(path)
-        data_to_encode = self.split_data_into_blocks(data_to_encode,block_size)
+        data_to_encode = Feistel_Net.split_data_into_blocks(data_to_encode,block_size)
         if mode == 'default':
             return self.decode_default(data_to_encode, secret_key, block_size, amount_of_rounds,f1,f2)
         elif mode == 'OFB':
@@ -158,8 +158,8 @@ class Feistel_Net:
             list_of_keys.append(r_key)
         return list_of_keys
     
-    
-    def split_data_into_blocks(self,data_to_encode:str,block_size:int)->list[str]:
+    @classmethod
+    def split_data_into_blocks(cls,data_to_encode:str,block_size:int)->list[str]:
         block_list = list()
         for i in range(ceil(len(data_to_encode)/block_size)):
             block = data_to_encode[i*block_size:((i+1)*block_size)]

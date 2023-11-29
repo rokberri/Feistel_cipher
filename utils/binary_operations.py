@@ -19,7 +19,9 @@ def AND(a:str, b:str)->str:
 
 
 def XOR(a:str,b:str)-> str:
-    """a XOR b"""
+    """
+    a XOR b
+    """
     
     result = ''
     for el in range(len(a)):
